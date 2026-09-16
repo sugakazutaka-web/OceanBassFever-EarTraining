@@ -2211,7 +2211,7 @@ body.fever-oni .instrument {background:linear-gradient(130deg,#285972,#304e72);}
     if(kind==='unlock') { const stars=document.createElement('div'); stars.className='fever-start-stars'; stars.textContent='★ ★ ★ ★ ★'; banner.append(stars); }
     if(kind==='oni' || kind==='cheer30' || kind==='cheer40') {
       const character=document.createElement('img'); character.className='oni-character'; character.src=mascotImage; character.alt='笑顔でお祝いする海の魔法使い・コーラル';
-      const speech=document.createElement('div'); speech.className='oni-speech'; speech.textContent=english ? (kind==='cheer30'?'Amazing! Keep it up!':kind==='cheer40'?'Just 10 more in a row! You can do it!':'Yeaah!!') : (kind==='cheer30'?'すごーい！ その調子〜！':kind==='cheer40'?'あと１０回連続、がんばって！！':'いえぇーい！！');
+      const speech=document.createElement('div'); speech.className='oni-speech'; speech.textContent=english ? (kind==='cheer30'?'Amazing! Keep it up!':kind==='cheer40'?'Just 10 more in a row! You can do it!':'Yeaah!!') : (kind==='cheer30'?'すごーい！ その調子〜！':kind==='cheer40'?'あと１０回連続、がんばって！！':'いえーーい！！');
       if(english && kind==='cheer40') {
         speech.replaceChildren(document.createTextNode('Just 10 more in a row! '));
         const encouragement=document.createElement('span');
