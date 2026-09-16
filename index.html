@@ -2489,6 +2489,9 @@ body.fever-oni .instrument {background:linear-gradient(130deg,#285972,#304e72);}
     [startButton,replayButton,playChordBtn,questionTypeSelect,noteCountSelect,firstNoteControls].forEach(control=>{control.disabled=true;});
     document.body.classList.add('game-cleared');
     endingMute.disabled=appSettings.sound!=='exists';
+    endingTitle.innerHTML=appSettings.lang==='on'
+      ? '<span class="ending-congratulations">Congratulations!!</span>'
+      : '<span>ゲームクリア</span> <span class="ending-congratulations">おめでとう！！</span>';
     invitation.textContent=appSettings.lang==='on'?'Try the other modes, too!':'他のモードにも挑戦だ〜！';
     endingDialog.showModal();endingOK.focus();
     try {playOniPartyMusic(true);}catch(error){console.warn('Ending music unavailable',error);}
@@ -2558,7 +2561,7 @@ body.fever-oni .instrument {background:linear-gradient(130deg,#285972,#304e72);}
     challengeDialog.classList.add('challenge-reply');
     challengeYes.disabled=challengeNo.disabled=true;
     challengeChoices.hidden=true;
-    challengeSpeech.textContent=appSettings.lang==='on' ? (harder?'Then try this!':'Keep up the great work!') : (harder?'じゃあ、これはどうだ～！':'その調子でがんばって！');
+    challengeSpeech.textContent=appSettings.lang==='on' ? (harder?'Then try this!':"You're on a roll! Keep it up!") : (harder?'じゃあ、これはどうだ～！':'その調子でがんばって！');
     setTimeout(()=>{
       if(harder) {
         if(challengeMode==='melody') appSettings.melodyRoot='exclude';
