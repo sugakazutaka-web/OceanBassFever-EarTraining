@@ -1481,11 +1481,21 @@ body.fever-oni .instrument {background:linear-gradient(130deg,#285972,#304e72);}
       return midiNotes.map(midi => midi - octaveShift);
     }
 
+    let chordTypeBag = [];
+    let lastChordName = null;
+    let lastChordShape = null;
+    function chordShape(sequence) {
+      return sequence.map(p => p.midi - sequence[0].midi).join(',');
+    }
     function makeChordQuestion(count, isRootFirst) {
       let attempts = 0;
-      const availableDefs = difficulty().hard 
-        ? tensionChordDefinitions
-        : basicChordDefinitions;
+      if (!difficulty().hard) chordTypeBag = [];
+      else if (!chordTypeBag.length) {
+        chordTypeBag = shuffleMelodies(['basic','basic','basic','basic','basic',
+          'tension','tension','tension','tension','tension']);
+      }
+      const useTension = difficulty().hard && chordTypeBag.at(-1) === 'tension';
+      const availableDefs = useTension ? tensionChordDefinitions : basicChordDefinitions;
 
       const firstCandidates = positions.filter(pos => pos.fret >= 1 && pos.fret <= 10);
 
@@ -1495,6 +1505,7 @@ body.fever-oni .instrument {background:linear-gradient(130deg,#285972,#304e72);}
         const rootName = pitchNames[rootPitchIndex];
         const chordDef = availableDefs[Math.floor(Math.random() * availableDefs.length)];
         const chordName = rootName + chordDef.name;
+        if (chordName === lastChordName) continue;
 
         if (firstCandidates.length === 0) break;
         const first = firstCandidates[Math.floor(Math.random() * firstCandidates.length)];
@@ -1542,6 +1553,7 @@ body.fever-oni .instrument {background:linear-gradient(130deg,#285972,#304e72);}
           if (maxMidi - minMidi > maxRangeMidi) return false;
 
           if (hasConsecutiveOctave(seq)) return false;
+          if (chordShape(seq) === lastChordShape) return false;
 
           return true;
         };
@@ -1573,12 +1585,14 @@ body.fever-oni .instrument {background:linear-gradient(130deg,#285972,#304e72);}
         if (validSeq && validSeq.length === count) {
           const baseMidi = 60 + rootPitchIndex;
           const chordMidiNotes = fitChordToFretboard(chordDef.intervals.map(i => baseMidi + i));
+          lastChordName = chordName;
+          lastChordShape = chordShape(validSeq);
+          if (difficulty().hard) chordTypeBag.pop();
           return { sequence: validSeq, titleName: chordName, displayKey: chordName, rootPitchIndex, chordMidiNotes };
         }
       }
 
-      const fallbackSeq = positions.filter(p => p.fret >= 1 && p.fret <= 10).slice(0, count);
-      return { sequence: fallbackSeq, titleName: 'C Major', displayKey: 'C Major', rootPitchIndex: 0, chordMidiNotes: [60, 64, 67] };
+      throw new Error('No chord question satisfying the range and repetition rules');
     }
 
     function makeScaleQuestion() {
