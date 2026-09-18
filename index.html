@@ -992,12 +992,16 @@ body.fever-oni .instrument {background:linear-gradient(130deg,#285972,#304e72);}
     return null;
   }
   function makeMelodyQuestion() {
-    const rootRule=appSettings.melodyRoot==='exclude'?'none':difficulty().hard?'include':'start';
+    const hard=difficulty().hard;
+    const rootRule=appSettings.melodyRoot==='exclude'?'none':hard?'include':'start';
+    const typeRule=`${hard?'hard':'easy'}:${rootRule}`;
     const matchesRoot=p=>rootRule==='include'?p.root!=='none':p.root===rootRule;
-    if(melodyTypeRule!==rootRule) {melodyTypeBag=[];melodyTypeRule=rootRule;}
-    if(!melodyTypeBag.length) melodyTypeBag=shuffleMelodies([
-      'major','major','major','minor','minor','minor','seventh','seventh','seventh','diminished'
-    ].filter(type=>melodyLibrary.some(p=>p.type===type && matchesRoot(p))));
+    if(melodyTypeRule!==typeRule) {melodyTypeBag=[];melodyTypeRule=typeRule;}
+    const types=hard
+      ? ['major','major','major','minor','minor','minor','seventh','seventh','seventh','diminished']
+      : ['major','minor'];
+    if(!melodyTypeBag.length) melodyTypeBag=shuffleMelodies(
+      types.filter(type=>melodyLibrary.some(p=>p.type===type && matchesRoot(p))));
     const type=melodyTypeBag.pop();
     const def=melodyDefinitions.find(d=>d.id===type);
     const eligible=melodyLibrary.filter(p=>p.type===type && (rootRule==='include'?p.root!=='none':p.root===rootRule));
@@ -1495,7 +1499,9 @@ body.fever-oni .instrument {background:linear-gradient(130deg,#285972,#304e72);}
           'tension','tension','tension','tension','tension']);
       }
       const useTension = difficulty().hard && chordTypeBag.at(-1) === 'tension';
-      const availableDefs = useTension ? tensionChordDefinitions : basicChordDefinitions;
+      const availableDefs = difficulty().hard
+        ? (useTension ? tensionChordDefinitions : basicChordDefinitions)
+        : basicChordDefinitions.filter(def => def.name === '' || def.name === 'm');
 
       const firstCandidates = positions.filter(pos => pos.fret >= 1 && pos.fret <= 10);
 
